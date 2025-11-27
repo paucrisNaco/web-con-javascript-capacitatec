@@ -1,0 +1,17 @@
+@font-face {
+    font-family: sacramento;
+    src: url(../fonts/Sacramento/Sacramento-Regular.ttf);
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: lora;
+    src: url(../fonts/Lora/static/Lora-Regular.ttf);
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: lora;
+    src: url(../fonts/Lora/static/Lora-SemiBold.ttf);
+    font-weight: 300;
+}

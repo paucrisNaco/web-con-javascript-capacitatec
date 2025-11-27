@@ -1,0 +1,187 @@
+Integrador 2 — Mini‑Sitio Accesible con Galería, Modal y Sticky
+Construí un mini‑sitio de 2–3 secciones para una marca ficticia (producto, evento, portfolio o blog).
+El foco está en semántica accesibilidad BEM modal sticky transiciones object‑fit control de texto.
+
+Objetivo: que el sitio sea usable, accesible y prolijo en desktop y mobile, con una UI simple pero cuidada.
+
+Requisitos (técnicos)
+HTML semántico: usar <header>, <nav>, <main>, <section>, <article>, <footer>.
+Accesibilidad: alt en imágenes, label + for en inputs, aria-label o aria-expanded donde aplique, focus visible.
+Metadatos: <title>, <meta name="description">, y favicon.
+Metodología BEM en clases: .bloque__elemento--modificador.
+Navegación sticky (position: sticky) o header fijo.
+Modal para ver detalles (botón “ver más”): abrir/cerrar + aria mínimo.
+Galería/cards con imágenes usando object-fit: cover y object-position.
+Transiciones en hover/focus (usar transform/opacity).
+Control de texto: usar line-clamp (multilínea) o text-overflow: ellipsis (1 línea) en descripciones.
+Enlaces avanzados: al menos uno con mailto: o tel: + un ancla interna.
+Details/Summary o FAQ (colapsable) para contenido secundario.
+Validación visual de formularios (mínima): :focus y :required o aria-required.
+Sin frameworks. Solo HTML + CSS + un poco de JS vanilla para el modal.
+Rúbrica (100 pts)
+
+Criterio	Descripción	Puntos
+Semántica	Uso correcto de etiquetas y estructura lógica.	15
+Accesibilidad	Labels, alt, roles/aria mínimos, focus visible, contraste.	15
+BEM	Nombres consistentes: bloque/elemento/modificador.	10
+Navegación	Sticky/fixed bien resuelto, sin superponer contenido.	10
+Galería/cards	Imágenes con object-fit + transiciones suaves.	10
+Modal	Abrir/cerrar, overlay, focus manejable, aria básico.	15
+Tipografía/Texto	Clamp/ellipsis + buen flujo de texto y alineación.	10
+Metadatos/Links	Title, description, favicon, enlaces avanzados.	5
+Calidad general	Orden, coherencia visual, sin errores graves.	10
+
+Starter (base sugerida)
+Copiá/pegá y personalizá. Incluye modal funcional, galería con object-fit, sticky, BEM, transiciones y control de texto.
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marca X — Mini Sitio</title>
+  <meta name="description" content="Mini sitio accesible con galería y modal." />
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    :root{ --c1:#0d6efd; --txt:#273140; --bd:#dee3ea; }
+    *{ box-sizing: border-box; }
+    body{ margin:0; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif; color:var(--txt); line-height:1.6; background:#f6f8fb; }
+    a{ color:var(--c1); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    .header{ position:sticky; top:0; background:#ffffffcc; backdrop-filter:blur(6px); border-bottom:1px solid var(--bd); z-index:1000; }
+    .header__inner{ max-width:1100px; margin:auto; display:flex; gap:14px; align-items:center; justify-content:space-between; padding:12px 16px; }
+    .nav__list{ list-style:none; display:flex; gap:12px; padding:0; margin:0; }
+    .btn{ background:var(--c1); color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; }
+    .btn:hover{ filter:brightness(1.05); }
+    main{ max-width:1100px; margin:18px auto; padding:0 16px 80px; display:grid; gap:18px; }
+    .hero{ background:#fff; border:1px solid var(--bd); border-radius:14px; padding:18px; display:grid; gap:10px; }
+    .cards{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
+    .card{ background:#fff; border:1px solid var(--bd); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+    .card__media{ aspect-ratio: 4/3; background:#e9eef5; }
+    .card__img{ width:100%; height:100%; object-fit:cover; object-position:center; transition: transform .35s ease, opacity .35s ease; }
+    .card__img:hover{ transform:scale(1.06); opacity:.93; }
+    .card__body{ padding:12px; display:grid; gap:6px; }
+    .card__title{ margin:0; font-size:1.05rem; }
+    .card__desc{ display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    /* Modal */
+    .modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1200; align-items:center; justify-content:center; }
+    .modal__dialog{ background:#fff; width:min(92vw,520px); border-radius:12px; padding:16px; box-shadow:0 18px 60px rgba(0,0,0,.28); }
+    .modal__footer{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
+    /* Accesibilidad focus */
+    :focus{ outline:3px solid var(--c1); outline-offset:3px; }
+    .visually-hidden{ position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+    footer{ text-align:center; color:#5b6675; padding:14px; }
+  </style>
+</head>
+<body>
+
+  <header class="header" role="banner">
+    <div class="header__inner">
+      <a class="logo" href="#top"><strong>Marca X</strong></a>
+      <nav class="nav" aria-label="Principal">
+        <ul class="nav__list">
+          <li><a href="#productos">Productos</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="mailto:ventas@marcax.com">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <h1>Lanzamiento 2025</h1>
+      <p>Descubrí nuestra nueva línea de productos. Calidad, diseño y accesibilidad para todos.</p>
+      <button class="btn" id="openModal" aria-haspopup="dialog" aria-controls="dialog">Ver detalle</button>
+    </section>
+
+    <section id="productos" class="cards">
+      <article class="card">
+        <div class="card__media">
+          <img class="card__img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200" alt="Zapatilla modelo A" loading="lazy">
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">Modelo A</h3>
+          <p class="card__desc">Diseño liviano y cómodo, ideal para entrenamiento diario y caminatas urbanas.</p>
+          <a class="btn" href="#top">Comprar</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__media">
+          <img class="card__img" src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1200" alt="Zapatilla modelo B" loading="lazy">
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">Modelo B</h3>
+          <p class="card__desc">Amortiguación superior y grip mejorado para superficies mixtas.</p>
+          <a class="btn" href="tel:+5491100000000">Llamar</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__media">
+          <img class="card__img" src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200" alt="Zapatilla modelo C" loading="lazy">
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">Modelo C</h3>
+          <p class="card__desc">Edición limitada con materiales premium y detalles únicos.</p>
+          <a class="btn" href="#faq">Ver FAQ</a>
+        </div>
+      </article>
+    </section>
+
+    <section id="faq">
+      <h2>Preguntas frecuentes</h2>
+      <details>
+        <summary>¿Cómo elijo mi talle?</summary>
+        <p>Recomendamos medir tu pie y consultar la tabla de talles. Si estás entre dos talles, elegir el mayor.</p>
+      </details>
+      <details>
+        <summary>¿Tienen envío al interior?</summary>
+        <p>Sí, realizamos envíos a todo el país con seguimiento.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer role="contentinfo">© 2025 Marca X — <a href="#top">Volver arriba</a></footer>
+
+  <!-- Modal accesible -->
+  <div class="modal" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+    <div class="modal__dialog">
+      <h2 id="dialogTitle">Detalle del lanzamiento</h2>
+      <p>Nueva colección con foco en materiales reciclados y procesos responsables. Stock limitado.</p>
+      <div class="modal__footer">
+        <button class="btn" id="closeModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const openBtn = document.getElementById('openModal');
+    const closeBtn = document.getElementById('closeModal');
+    const dialog = document.getElementById('dialog');
+
+    openBtn.addEventListener('click', () => {
+      dialog.style.display = 'flex';
+      dialog.querySelector('.modal__dialog').focus();
+    });
+    closeBtn.addEventListener('click', () => dialog.style.display = 'none');
+    window.addEventListener('click', (e) => { if(e.target === dialog) dialog.style.display = 'none'; });
+    window.addEventListener('keydown', (e) => { if(e.key === 'Escape') dialog.style.display = 'none'; });
+  </script>
+
+</body>
+</html>
+
+Checklist de entrega
+✅ Semántica correcta + estructura lógica.
+✅ Accesibilidad mínima (alt, label/for, aria básico, focus visible).
+✅ BEM en nombres de clases.
+✅ Sticky/fixed sin tapar contenido.
+✅ Modal con overlay y cierre por fondo/Escape.
+✅ Galería/cards con object-fit y transiciones suaves.
+✅ Control de texto (ellipsis o clamp) en descripciones.
+✅ Metadatos + favicon + enlaces avanzados.
+✅ Código ordenado (indentación, comentarios, archivos organizados).
+
+Tip: usá Emmet para acelerar la maquetación 😉
