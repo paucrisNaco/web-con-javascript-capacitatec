@@ -1,0 +1,16 @@
+CONSIGNAS TP INTEGRADOR JAVASCRIPT
+
+Para quienes realicen proyectos propios
+Si deciden desarrollar una propuesta personal, asegúrense de respetar los criterios de evaluación establecidos (manipulación del DOM, eventos, lógica, arrays, funciones, buenas prácticas, etc.).
+
+5. Criterios de evaluación
+✅ Cumplimiento de las funcionalidades mínimas.
+✅ Uso correcto de:
+variables (let, const),
+funciones,
+arrays y objetos,
+condicionales y bucles,
+eventos y manipulación del DOM.
+✅ Claridad del código (nombres de variables, comentarios, estructura).
+✅ Prolijidad general del proyecto (indentación, organización, etc.).
+⭐️ Puntos extra por funcionalidades opcionales bien resueltas.

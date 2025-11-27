@@ -1,0 +1,7 @@
+{
+    "users": [
+        {"name":"Ana Gacía", "email": "ana@example.com", "terms":"true"},
+        {"name":"Paula Lopez", "email": "pau@example.com", "terms":"true"},
+        {"name":"Gonzalo Machado", "email":"gonza@example.com", "terms":"true"}
+    ]
+}

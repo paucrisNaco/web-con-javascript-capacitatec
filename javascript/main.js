@@ -15,8 +15,8 @@ const userName=panelUsuario.querySelector("h4");
 // Del formulario de registro
 const enlace=formRegistro.querySelector("a");
 // Del formulario de login
-const enlaceRegistro=formLogin.getElementById("registrarme");
-const enlaceContraseña=formLogin.getElementById("contraseña");
+const enlaceRegistro=document.getElementById("registrarme");
+const enlaceContraseña=document.getElementById("contraseña");
 
 //-----------
 // FUNCIONES
@@ -30,6 +30,8 @@ const ocultarRegistro=()=>formRegistro.style.display="none";
 const mostrarLogin=()=>formLogin.style.display="flex";
 const ocultarLogin=()=>formLogin.style.display="none";
 const mostrarPanel=()=>panelUsuario.style.display="flex";
+// Convertir objeto a texto y guardar el usaurio en el localSotrage
+const guardarUsers=(users)=>localStorage.setItem("users", JSON.stringify(users));
 
 /* funciones normales */
 function abrirModalRegistro() {
@@ -95,8 +97,43 @@ function cargarUsers(){
     }
     return users;
 }
-// Convertir objeto a texto y guardar el usaurio en el localSotrage
-const guardarUsers=(users)=>localStorage.setItem("users", JSON.stringify(users));
+// buscar usuarios en la lista users del localStorage
+function buscarUsuario(name, email){
+    const users=cargarUsers();
+    for (let usuario of users){
+        if (usuario.name===name && usuario.email===email){
+            return usuario;
+        }
+    }
+    return false;
+}
+
+/* funciones asincronas */
+// cargar la base de datos json
+async function cargarDatosDelJSON(){
+    try{
+        // “Pedir” los datos del JSON
+        const response = await fetch("../data/fakeDB.json"); // ruta a tu archivo JSON
+        if (!response.ok) {
+            throw new Error("No se pudo cargar el JSON: " + response.status);
+        }
+        const data=await response.json(); // convertir a objeto JS
+        return data.users; // devolver la lista de usuarios
+    }catch (error) {
+        console.error("Error al cargar datos del JSON:", error);
+        return []; // devolver lista vacía si falla
+    }
+}
+// buscar en la base de datos json
+async function buscarJson(name, email){
+    const users=await cargarDatosDelJSON(); // espera que carge la DB
+    for (let usuario of users){
+        if (usuario.name===name && usuario.email===email){
+            return usuario; // devuelve el usuario si coincide
+        }
+    }
+    return false;
+}
 
 //---------
 // EVENTOS
@@ -158,7 +195,7 @@ enlace.addEventListener("click", (e)=>{
 });
 
 // Escuchar el evento submit del > Login <
-formLogin.addEventListener("submit", (e)=>{
+formLogin.addEventListener("submit", async (e)=>{
     e.preventDefault(); // método que evita que se recargue la página por defecto
 // guardar en variables los objetos del form para manipularlos
 const name=document.getElementById("nameLogin").value.trim(); // value captura su valor
@@ -171,39 +208,32 @@ if (!validacionLogin(name, email)){
 };
 // si todo esta OK, continua la ejecución
 
-// recuperar datos del usuario del localStorage
-const users=cargarUsers();
-
-// para cada usuario en la lista users
-for (let usuario of users){
-    // si coinciden el nombre y el email entonces
-    if (usuario.name===name && usuario.email===email){
-        // enviar mensaje de form enviado con éxito
-        alert("Inicio de sesión exitoso");
-        // Encontrar el panel usuario
-        const panelUsuario=document.querySelector(".panelUsuario")
-        // Encontar el h4 del panel de usuario
-        const userName=panelUsuario.querySelector("h4")
-        // reemplazar el contenido del h4 por el contendio del dato guardado en name
-        userName.textContent=usuario.name
-        // resetear el formLogin
-        formLogin.reset();
-        // cerrar el modal
-        modal.style.display="none";
-        // Hacer aparecer el panel de usuario
-        panelUsuario.style.display="flex";
-        return; // terminar ejecución del for
-    }
+ // Primero buscar en localStorage
+let encontrado=buscarUsuario(name, email);
+// Si no se encontró, buscar en JSON
+if (!encontrado){
+    encontrado=await buscarJson(name, email);
 }
-// si los datos no coinciden o no se encontraron
-alert("Usuario no encontrado. Para acceder debes registrarte.");
+// si no se encontró alert
+if (!encontrado){
+    alert("Usuario no encontrado. Para acceder debes registrarte.");
+    abrirModalRegistro();
+    return;
+};
+// si se encontró continúa la ejecución
+alert("Inicio de sesión exitoso");
+// reemplazar el contenido del h4 por el contendio del dato guardado en name
+userName.textContent=encontrado.name
+// resetear el form de registro
+formLogin.reset();
+// cerrar el modal y hacer aparecer el panel de usuario
+activarPanel();
 });
-
 
 // Evento click sobre el enlace de registrarme desde el login
 enlaceRegistro.addEventListener("click", (e)=>{
     e.preventDefault(); // evitar que la página se recargue
-    abrirModalRegistro; // hacer aparecer el formRegistro y ocultar el formLogin
+    abrirModalRegistro(); // hacer aparecer el formRegistro y ocultar el formLogin
 });
 
 // Evento clic sobre el enlace de la contraseña desde el login
