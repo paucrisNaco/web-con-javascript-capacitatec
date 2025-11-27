@@ -3,9 +3,10 @@
 // -------------------------------------------------------------
 // Botón "Unirme"
 const unirme=document.getElementById("unirme");
-// Modal-overla y modal
+// Modal-overlay y modal
 const modal=document.querySelector(".modal-overlay");
 const formulario=document.querySelector(".modal");
+const gatito=document.querySelector(".overlayGato");
 // Formularios de registro y login
 const formLogin=document.getElementById("formLogin");
 const formRegistro=document.getElementById("formRegistro");
@@ -17,6 +18,8 @@ const enlace=formRegistro.querySelector("a");
 // Del formulario de login
 const enlaceRegistro=document.getElementById("registrarme");
 const enlaceContraseña=document.getElementById("contraseña");
+// Del navbar
+const login=document.getElementById("login");
 
 //-----------
 // FUNCIONES
@@ -30,8 +33,12 @@ const ocultarRegistro=()=>formRegistro.style.display="none";
 const mostrarLogin=()=>formLogin.style.display="flex";
 const ocultarLogin=()=>formLogin.style.display="none";
 const mostrarPanel=()=>panelUsuario.style.display="flex";
+const mostrarGato=()=>gatito.style.display="flex";
+const ocultarGato=()=>gatito.style.display="none";
 // Convertir objeto a texto y guardar el usaurio en el localSotrage
 const guardarUsers=(users)=>localStorage.setItem("users", JSON.stringify(users));
+// tiempo de espera
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /* funciones normales */
 function abrirModalRegistro() {
@@ -48,7 +55,6 @@ function activarPanel(){
     cerrarModal();
     mostrarPanel();
 }
-
 // validación de datos del form Registro
 function validacionRegistro(name, email, terms){
     if (!name && !email && !terms){ // si los tres están vacíos / marcados
@@ -147,8 +153,7 @@ modal.addEventListener("click", ()=>cerrarModal());
 formulario.addEventListener("click", (e)=>e.stopPropagation());
 // Cerrar el modal con evento tecla
 document.addEventListener("keydown", (e) => {
-    // Si se preciona Escape cerrar el modal
-    if (e.key === "Escape") cerrarModal();
+    if (e.key === "Escape") cerrarModal(); // Si se preciona Escape cerrar el modal
 });
 
 // Escuchar el evento submit del > Registro <
@@ -175,15 +180,13 @@ guardarUsers(users);
 // enviar mensaje de form enviado con éxito
 alert("Registro exitoso");
 
-// Cambiar el nombre en el panel de usuario
 // Guardar el último elemento del array users
 const lastUser=users[users.length-1];
+// Cambiar el nombre en el panel de usuario
 // reemplazar el contenido del h4 por el contendio del dato guardado en name
 userName.textContent=lastUser.name
-
 // resetear el form de registro
 formRegistro.reset();
-
 // cerrar el modal y hacer aparecer el panel de usuario
 activarPanel();
 });
@@ -212,7 +215,10 @@ if (!validacionLogin(name, email)){
 let encontrado=buscarUsuario(name, email);
 // Si no se encontró, buscar en JSON
 if (!encontrado){
-    encontrado=await buscarJson(name, email);
+    mostrarGato();
+    encontrado = await buscarJson(name, email);
+    await delay(500);
+    ocultarGato(); // ocultamos solo después de buscar en JSON
 }
 // si no se encontró alert
 if (!encontrado){
@@ -241,3 +247,9 @@ enlaceContraseña.addEventListener("click", (e)=>{
     e.preventDefault();
     // mail to para recuperar contraseña
 })
+
+// Evento clic en iniciar sesion desde el navbar
+login.addEventListener("click", (e)=>{
+    e.preventDefault();
+    abrirModalLogin();
+});
